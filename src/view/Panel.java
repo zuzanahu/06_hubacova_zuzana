@@ -22,7 +22,7 @@ public class Panel extends JPanel {
     Panel() {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         raster = new RasterBI(WIDTH, HEIGHT);
-        raster.clear(0x00000000);
+        raster.clear(0x000000);
         setLoop();
     }
 
@@ -55,6 +55,6 @@ public class Panel extends JPanel {
     }
 
     public void clear() {
-        raster.clear(0x00000000);
+        raster.clear(0x000000);
     }
 }
