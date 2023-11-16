@@ -44,12 +44,12 @@ public class LineRasterizerGraphics implements LineRasterizer {
             if (Math.abs(y2 - y1) < Math.abs(x2 - x1)) {
                 //c == x axis, r == y axis
                 if (x2 > x1) {
-                    for (int c = x1; c < x2; c++) {
+                    for (int c = x1; c <= x2; c++) {
                         int r = (int) (k * c + q);
                         raster.setColor(c, r, color);
                     }
                 } else {
-                    for (int c = x1; x2 < c; c--) {
+                    for (int c = x1; x2 <= c; c--) {
                         int r = (int) (k * c + q);
                         raster.setColor(c, r, color);
                     }
@@ -58,12 +58,12 @@ public class LineRasterizerGraphics implements LineRasterizer {
                 //c == x axis, r == y axis
 
                 if (y2 > y1) {
-                    for (int r = y2; y1 < r; r--) {
+                    for (int r = y2; y1 <= r; r--) {
                         int c = (int) ((r - q) / k);
                         raster.setColor(c, r, color);
                     }
                 } else {
-                    for (int r = y1; y2 < r; r--) {
+                    for (int r = y1; y2 <= r; r--) {
                         int c = (int) ((r - q) / k);
                         raster.setColor(c, r, color);
                     }

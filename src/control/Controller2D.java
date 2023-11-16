@@ -1,5 +1,6 @@
 package control;
 
+import fill.SeedFill;
 import model.Line;
 import model.Point2D;
 import rasterize.*;
@@ -43,7 +44,13 @@ public class Controller2D implements Controller {
             public void mouseReleased(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
                     polygonPoints.add(new Point2D(e.getX(), e.getY()));
-                    polygonRasterizer.drawPolygon( polygonPoints, 0xffffff);
+                    polygonRasterizer.drawPolygon( polygonPoints, 0x00ffffff);
+                    panel.repaint();
+                }
+                if (e.getButton() == MouseEvent.BUTTON3) {
+                    polygonRasterizer.drawPolygon( polygonPoints, 0x00ffffff);
+                    SeedFill filler = new SeedFill();
+                    filler.seedFill(raster, new Point2D(e.getX(), e.getY()), 0x0000ff00);
                     panel.repaint();
                 }
             }
@@ -56,19 +63,19 @@ public class Controller2D implements Controller {
                     polygonPoints.add(new Point2D(e.getX(), e.getY()));
                     Point2D firstPoint = polygonPoints.get(0);
                     Point2D lastPoint = new Point2D(e.getX(), e.getY());
-                    lineRasterizer.rasterize(new Line(firstPoint, lastPoint, 0xff0000));
+                    lineRasterizer.rasterize(new Line(firstPoint, lastPoint, 0x00ff0000));
                     panel.repaint();
                 }
                 // when you want to draw other lines than the first line of the polygon by dragging the mouse
                 else {
                     panel.clear();
-                    polygonRasterizer.drawPolygon(polygonPoints, 0xffffff);
+                    polygonRasterizer.drawPolygon(polygonPoints, 0x00ffffff);
                     // We have to connect the first and last point of the polygon with the point of the dragging event (current point) to make the polygon appear enclosed
                     Point2D firstPoint = polygonPoints.get(0);
                     Point2D currentPoint = new Point2D(e.getX(), e.getY());
-                    lineRasterizer.rasterize(new Line(currentPoint, firstPoint, 0xff0000));
+                    lineRasterizer.rasterize(new Line(currentPoint, firstPoint, 0x00ff0000));
                     Point2D lastPoint = polygonPoints.get(polygonPoints.size() - 1);
-                    lineRasterizer.rasterize(new Line(lastPoint, currentPoint, 0xff0000));
+                    lineRasterizer.rasterize(new Line(lastPoint, currentPoint, 0x00ff0000));
                     panel.repaint();
                 }
             }
