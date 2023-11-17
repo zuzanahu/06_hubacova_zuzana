@@ -4,6 +4,7 @@ import fill.SeedFill;
 import fill.SeedFillBorder;
 import model.Line;
 import model.Point2D;
+import model.Polygon;
 import rasterize.*;
 import view.Panel;
 
@@ -50,8 +51,8 @@ public class Controller2D implements Controller {
                 }
                 if (e.getButton() == MouseEvent.BUTTON3) {
                     polygonRasterizer.drawPolygon( polygonPoints, 0x00ffffff);
-                    SeedFillBorder filler = new SeedFillBorder();
-                    filler.seedFill(raster, new Point2D(e.getX(), e.getY()), 0x0000ff00, 0x00ffffff);
+                    SeedFill filler = new SeedFill();
+                    filler.seedFill(raster, new Point2D(e.getX(), e.getY()), 0x0000ff00, new Polygon(polygonPoints));
                     panel.repaint();
                 }
             }

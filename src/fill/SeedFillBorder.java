@@ -2,12 +2,13 @@ package fill;
 
 
 import model.Point2D;
+import model.Polygon;
 import rasterize.Raster;
 
 public class SeedFillBorder {
 
     public void dfs(Raster raster, int c, int r, int newColor, int borderColor) {
-        // check if the point is inside polygon TODO
+
 
 
         raster.getColor(c,r).ifPresent( color -> {
@@ -32,10 +33,14 @@ public class SeedFillBorder {
     }
 
 
-    public void seedFill(Raster raster, Point2D seed, int newColor, int borderColor) {
+    public void seedFill(Raster raster, Point2D seed, int newColor, int borderColor, Polygon polygon) {
+
         //the seed has on default the color of the raster background
         int c = seed.getX();
         int r = seed.getY();
+        if (!polygon.isPointInside(raster, c, r)) {
+            return;
+        }
         int oldColor = raster.getColor(c, r).orElseThrow(() -> new IllegalStateException("seed does not have any color in the raster"));
         if(oldColor == newColor) {
             return;

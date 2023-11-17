@@ -1,6 +1,7 @@
 package fill;
 
 import model.Point2D;
+import model.Polygon;
 import rasterize.Raster;
 
 import java.util.ArrayList;
@@ -36,9 +37,12 @@ public class SeedFill {
         } );
     }
 
-    public void seedFill(Raster raster, Point2D seed, int newColor) {
+    public void seedFill(Raster raster, Point2D seed, int newColor, Polygon polygon) {
         int c = seed.getX();
         int r = seed.getY();
+        if (!polygon.isPointInside(raster, c, r)) {
+            return;
+        }
         int oldColor = raster.getColor(c, r).orElseThrow(() -> new IllegalStateException("seed does not have any color in the raster"));
         if(oldColor == newColor) {
             return;
@@ -49,32 +53,32 @@ public class SeedFill {
     /**
      * BFS
      */
-    /*public void seedFillBFS(Raster raster, Point2D seed, int newColor) {
+    public void seedFillBFS(Raster raster, Point2D seed, int newColor, Polygon polygon) {
         int c = seed.getX();
         int r = seed.getY();
-        int oldColor = raster.getColor(c, r).orElseThrow(() -> new IllegalStateException("seed does not have any color in the raster"));
-        if(oldColor == newColor) {
+        if (!polygon.isPointInside(raster, c, r)) {
             return;
         }
-        ArrayList<Point2D> queue = new ArrayList<Point2D>();
-        Point2D point;
-        queue.add(seed);
-        for (int i = 0; i < queue.size(); i++) {
-            point = queue.get(i);
-            Point2D finalPoint = point;
-            raster.getColor(c,r).ifPresent(color -> {
-                if ((color != oldColor) || (c >= raster.getWidth()) || (r >= raster.getHeight()) || (c <= 0) || (r <= 0) ) {
-                    continue;
-                } else {
-                    // current pixel / center
-                    raster.setColor(c, r, newColor);
-                    queue.add(new Point2D(finalPoint.getX() + 1, finalPoint.getY()));
-                    queue.add(new Point2D(finalPoint.getX() - 1, finalPoint.getY()));
-                    queue.add(new Point2D(finalPoint.getX(), finalPoint.getY() + 1 ));
-                    queue.add(new Point2D(finalPoint.getX(), finalPoint.getY() - 1));
-                }
-            } );
+        int oldColor = raster.getColor(c, r).orElseThrow(() -> new IllegalStateException("seed does not have any color in the raster"));
+        if (oldColor == newColor) {
+            return;
         }
-    }*/
+        Queue<Point2D> queue = new LinkedList<Point2D>();
+        queue.add(seed);
+        while (!queue.isEmpty()) {
+            Point2D currentPoint = queue.poll();
+            raster.getColor(c, r).ifPresent(color -> {
+                if ((color != oldColor) || (c >= raster.getWidth()) || (r >= raster.getHeight()) || (c <= 0) || (r <= 0)) {
+                    return;
+                } else {
+                    raster.setColor(currentPoint.getX(), currentPoint.getY(), newColor);
+                    queue.add(new Point2D(currentPoint.getX() + 1, currentPoint.getY()));
+                    queue.add(new Point2D(currentPoint.getX() - 1, currentPoint.getY()));
+                    queue.add(new Point2D(currentPoint.getX(), currentPoint.getY() + 1));
+                    queue.add(new Point2D(currentPoint.getX(), currentPoint.getY() - 1));
+                }
+            });
+        }
+    }
 
 }
