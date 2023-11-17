@@ -8,16 +8,12 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.function.Predicate;
 
-public class SeedFill implements Filler {
+public class SeedFill {
 
     public SeedFill() {
 
     }
 
-    @Override
-    public void fill() {
-
-    }
 
     public void dfs(Raster raster, int c, int r, int oldColor, int newColor) {
         // check if the point is inside polygon TODO

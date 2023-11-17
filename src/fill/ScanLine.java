@@ -1,9 +1,8 @@
 package fill;
 
-public class ScanLine implements Filler {
+public class ScanLine {
 
 
-    @Override
     public void fill() {
 
     }
