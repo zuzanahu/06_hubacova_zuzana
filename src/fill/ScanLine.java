@@ -4,10 +4,8 @@ import model.Line;
 import model.Polygon;
 import rasterize.LineRasterizerGraphics;
 import rasterize.PolygonRasterizer;
-import rasterize.Raster;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class ScanLine {
@@ -28,16 +26,35 @@ public class ScanLine {
         List<Line> lines = polygon.getLines();
 
         // 2. Remove horizontal lines from the list
-        for (int i = 0; i < lines.size(); i++) {
-            int y1 = lines.get(i).getY1();
-            int y2 = lines.get(i).getY2();
-            if (y1 == y2) {
-                lines.remove(i);
+        List<Line> nonHorizontalLines = new ArrayList<>();
+        for (Line line : lines) {
+            int y1 = line.getY1();
+            int y2 = line.getY2();
+            if (y1 != y2) {
+                nonHorizontalLines.add(line);
             }
         }
+        lines = nonHorizontalLines;
 
         // 3. Orient the lines
+        List<Line> orientedLines = new ArrayList<>();
+        for (Line line: lines) {
+            int x1 = line.getX1();
+            int y1 = line.getY1();
+            int x2 = line.getX2();
+            int y2 = line.getY2();
 
+            if(y1 > y2){
+                y1 = line.getY2();
+                y2 = line.getY1();
+
+                x1 = line.getX2();
+                x2 = line.getX1();
+            }
+            orientedLines.add(new Line(x1-1, y1-1, x2, y2, polygonColor)) ;
+
+        }
+        lines = orientedLines;
 
         // 4. Calculate yMin and yMax
         int yMin = Integer.MAX_VALUE;
@@ -49,40 +66,40 @@ public class ScanLine {
             yMax = Math.max(yMax, Math.max(line.getY1(), line.getY2()));
         }
 
-        // 5. for y in [yMin, yMax]: scan line is vertical (goes from yMin to yMax from top to bottom)
+        // 5. for y in [yMin, yMax]: (goes from yMin to yMax from top to bottom)
         for (int y = yMin; y <= yMax; y++) {
-            List<Double> intercepts = new ArrayList<>();
+            ArrayList<Double> intercepts = new ArrayList<>();
 
             // create a list of intercepts
             for (Line line : lines) {
                 double intercept = computeIntercept(line, y);
-                if (intercept != Double.MAX_VALUE) { // TODO dat tam boolean mitso max_value
+                if (intercept != Double.MAX_VALUE) {
                     intercepts.add(intercept);
                 }
             }
-            // sort the list of intercepts in ascending order (so that the scan line can go from top to bottom)
-            intercepts.sort(Comparator.naturalOrder());
+            // sort intercepts in an ascending way
+            ArrayList<Double> sortedIntercepts = sortIntercepts(intercepts);
 
-            // fill the area between odd and even intercepts using the `fillColor`
-            for (int i = 0; i < intercepts.size(); i += 2) {
-                int xStart = (int) Math.round(intercepts.get(i));
-                // Check if i + 1 is within bounds
-                    int xEnd = (int) Math.round(intercepts.get(i + 1));
+            // draw lines from even intercept to odd intercept
+            for (int i = 0; i < sortedIntercepts.size(); i += 2) {
+                int xStart = (int) Math.round(sortedIntercepts.get(i));
+                int xEnd = (int) Math.round(sortedIntercepts.get(i + 1));
+
+                // Ensure xStart and xEnd are different to avoid processing vertices twice
+                if (xStart != xEnd) {
                     liner.drawLine(xStart, y, xEnd, y, fillColor);
+                }
             }
         }
-        //      - for line in lines:
-        //          - compute the intercept if it exists and add it to the list of intercepts
-        // 6. Rasterize the polygon using the `polygonColor` TODO
+        // 6. Rasterize the polygon using the `polygonColor`
         polygoner.drawPolygon(polygon.getPoints(), polygonColor);
-
     }
 
     /**
      *
      * @param line Line object
      * @param y coordinate of the horizontal scanline
-     * @return
+     * @return intersect
      */
     private double computeIntercept(Line line, int y) {
         int x1 = line.getX1();
@@ -90,16 +107,6 @@ public class ScanLine {
         int x2 = line.getX2();
         int y2 = line.getY2();
 
-        // Handle special case: vertical line
-        if (x1 == x2) {
-            // check if the lines
-            return (y == y1 && y == y2) ? x1 : Double.MAX_VALUE;
-        }
-
-        // Handle special case: horizontal line
-        if (y1 == y2) {
-            return Double.MAX_VALUE; // The line is parallel to the scanline.
-        }
 
         // Compute x-coordinate using the line equation
         double x = x1 + (double) (y - y1) * (x2 - x1) / (y2 - y1);
@@ -111,4 +118,23 @@ public class ScanLine {
 
         return x;
     }
+
+    private ArrayList<Double> sortIntercepts(ArrayList<Double> list) {
+        {
+            int n = list.size();
+
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n - i - 1; j++) {
+                    if (list.get(j) > list.get(j + 1)) {
+                        // swap the elements
+                        Double temp = list.get(j);
+                        list.set(j, list.get(j + 1));
+                        list.set(j + 1, temp);
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
 }
