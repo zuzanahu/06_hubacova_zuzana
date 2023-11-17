@@ -39,6 +39,16 @@ public class Controller2D implements Controller {
 
     @Override
     public void initListeners(Panel panel) {
+        panel.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                // na klávesu C vymazat plátno
+                if (e.getKeyCode() == KeyEvent.VK_C) {
+                    polygonPoints.clear();
+                    panel.clear();
+                }
+            }
+        });
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
