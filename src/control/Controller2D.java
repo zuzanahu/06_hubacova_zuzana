@@ -1,8 +1,10 @@
 package control;
 
+import fill.ScanLine;
 import fill.SeedFill;
 import model.Line;
 import model.Point2D;
+import model.Polygon;
 import rasterize.*;
 import view.Panel;
 
@@ -52,20 +54,31 @@ public class Controller2D implements Controller {
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
+                // draw polygon
                 if (e.getButton() == MouseEvent.BUTTON1) {
                     polygonPoints.add(new Point2D(e.getX(), e.getY()));
                     polygonRasterizer.drawPolygon( polygonPoints, 0x00ffffff);
+                    lineRasterizer.drawLine(4, 100, 4, 100, 0x000000ff);
                     panel.repaint();
                 }
-                if (e.getButton() == MouseEvent.BUTTON3) {
+                // seed-fill
+                if (e.getButton() == MouseEvent.BUTTON2) {
                     polygonRasterizer.drawPolygon( polygonPoints, 0x00ffffff);
                     SeedFill filler = new SeedFill();
                     filler.seedFill(raster, new Point2D(e.getX(), e.getY()), 0x0000ff00);
                     panel.repaint();
                 }
+                //scan-line
+                if (e.getButton() == MouseEvent.BUTTON3) {
+                    polygonRasterizer.drawPolygon( polygonPoints, 0x00ffffff);
+                    ScanLine scanner = new ScanLine();
+                    scanner.fill(new Polygon(polygonPoints), 0x000000ff, polygonRasterizer, 0x00ffffff, lineRasterizer);
+                    panel.repaint();
+                }
             }
         });
         panel.addMouseMotionListener(new MouseMotionAdapter() {
+            // draw polygon more interactively
             @Override
             public void mouseDragged(MouseEvent e) {
                 // when you want to draw the first line of the polygon by dragging the mouse

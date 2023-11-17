@@ -4,6 +4,7 @@ import model.Line;
 import model.Point2D;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class PolygonRasterizer {
 
@@ -21,7 +22,7 @@ public class PolygonRasterizer {
      * @param nodes nodes of the polygon
      * @param color border color
      */
-    public void drawPolygon(ArrayList<Point2D> nodes , int color) {
+    public void drawPolygon(List<Point2D> nodes , int color) {
         if (nodes.size() > 1) {
             raster.clear(0x000000);
             for (int i = 0; i < nodes.size() - 1; i++) {
