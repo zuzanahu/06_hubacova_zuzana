@@ -1,5 +1,6 @@
 package fill;
 
+
 import model.Line;
 import model.Polygon;
 import rasterize.LineRasterizerGraphics;
