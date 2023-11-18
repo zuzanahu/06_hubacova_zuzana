@@ -13,6 +13,12 @@ public class Line {
         this.y2 = y2;
         this.color = color;
     }
+    public Line(int x1, int y1, int x2, int y2) {
+        this.x1 = x1;
+        this.x2 = x2;
+        this.y1 = y1;
+        this.y2 = y2;
+    }
 
     public Line(Point2D p1, Point2D p2, int color) {
         this.x1 = p1.getX();

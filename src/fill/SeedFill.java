@@ -67,16 +67,17 @@ public class SeedFill {
         queue.add(seed);
         while (!queue.isEmpty()) {
             Point2D currentPoint = queue.poll();
-            raster.getColor(c, r).ifPresent(color -> {
-                if ((color != oldColor) || (c >= raster.getWidth()) || (r >= raster.getHeight()) || (c <= 0) || (r <= 0)) {
-                    return;
-                } else {
-                    raster.setColor(currentPoint.getX(), currentPoint.getY(), newColor);
-                    queue.add(new Point2D(currentPoint.getX() + 1, currentPoint.getY()));
-                    queue.add(new Point2D(currentPoint.getX() - 1, currentPoint.getY()));
-                    queue.add(new Point2D(currentPoint.getX(), currentPoint.getY() + 1));
-                    queue.add(new Point2D(currentPoint.getX(), currentPoint.getY() - 1));
+            int x = currentPoint.getX();
+            int y = currentPoint.getY();
+            raster.getColor(x, y).ifPresent(color -> {
+                if ((color == oldColor) && (c <= raster.getWidth()) && (r <= raster.getHeight()) && (c >= 0) && (r >= 0)) {
+                    raster.setColor(x, y, newColor);
+                    queue.add(new Point2D(x + 1, y));
+                    queue.add(new Point2D(x - 1, y));
+                    queue.add(new Point2D(x, y + 1));
+                    queue.add(new Point2D(x, y - 1));
                 }
+
             });
         }
     }

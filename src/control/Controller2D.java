@@ -64,9 +64,15 @@ public class Controller2D implements Controller {
                 }
                 // seed-fill
                 if (e.getButton() == MouseEvent.BUTTON2) {
-                    polygonRasterizer.drawPolygon( polygonPoints, 0x00ffffff);
+                    // seed-fill background
+                    /*polygonRasterizer.drawPolygon( polygonPoints, 0x00ffffff);
                     SeedFill filler = new SeedFill();
                     filler.seedFill(raster, new Point2D(e.getX(), e.getY()), 0x0000ff00, new Polygon(polygonPoints));
+                    panel.repaint();*/
+                    //seed-fill background queue
+                    polygonRasterizer.drawPolygon( polygonPoints, 0x00ffffff);
+                    SeedFill filler = new SeedFill();
+                    filler.seedFillBFS(raster, new Point2D(e.getX(), e.getY()), 0x0000ff00, new Polygon(polygonPoints));
                     panel.repaint();
                 }
                 //scan-line
