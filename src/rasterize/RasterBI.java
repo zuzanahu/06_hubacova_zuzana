@@ -1,5 +1,4 @@
 package rasterize;
-import rasterize.Raster;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -47,14 +46,11 @@ public class RasterBI implements Raster {
             gr.setColor(new Color(backgroundColor));
             gr.fillRect(0, 0, img.getWidth(), img.getHeight());
         } finally {
-            gr.dispose(); // Dispose of the Graphics object
+            gr.dispose();
         }
     }
 
-    /**
-     * TODO
-     * @param g
-     */
+
     @Override
     public void present(Graphics g) {
         g.drawImage(img, 0, 0, null);

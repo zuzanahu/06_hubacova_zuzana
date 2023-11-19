@@ -31,4 +31,9 @@ public class Point2D {
     public void setY(int y) {
         this.y = y;
     }
+
+    @Override
+    public String toString() {
+        return "x" + this.getX() + ":" + this.getY() + "y";
+    }
 }

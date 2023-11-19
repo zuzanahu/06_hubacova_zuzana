@@ -2,6 +2,7 @@ package control;
 
 import fill.ScanLine;
 import fill.SeedFill;
+import fill.SeedFillBorder;
 import model.Clipper;
 import model.Line;
 import model.Point2D;
@@ -11,13 +12,9 @@ import view.Panel;
 
 import java.awt.event.*;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Controller2D implements Controller {
 
-    private final Panel panel;
-
-    private int x,y;
     private LineRasterizerGraphics lineRasterizer;
 
     private PolygonRasterizer polygonRasterizer;
@@ -28,7 +25,6 @@ public class Controller2D implements Controller {
 
 
     public Controller2D(Panel panel) {
-        this.panel = panel;
         initObjects(panel.getRaster());
         initListeners(panel);
     }
@@ -63,16 +59,35 @@ public class Controller2D implements Controller {
                 }
                 //on H clip
                 if (e.getKeyCode() == KeyEvent.VK_H) {
+
                     if (clipperPoints.size() > 2 && toClipPoints.size() > 2) {
                         panel.clear();
+
                         Clipper clipper = new Clipper();
                         ScanLine filler = new ScanLine();
-                        polygonRasterizer.drawPolygon( clipperPoints, 0x00ffff00);
-                        polygonRasterizer.drawPolygon(toClipPoints, 0x0000ff00);
-                        List<Point2D> newPoints = clipper.clip(new Polygon(toClipPoints), new Polygon(clipperPoints));
+                        int yellowColor = 0x00ffff00;
+                        int greenColor = 0x0000ff00;
+                        int redColor = 0x00ff0000;
+                        int greyColor = 0x00f0f0f0;
+
+                        System.out.println("yellow");
+                        Polygon yellowPolygon = new Polygon(clipperPoints);
+                        System.out.println("green");
+                        Polygon greenPolygon = new Polygon(toClipPoints);
+
+                        polygonRasterizer.drawPolygon(yellowPolygon.getPoints(), yellowColor);
+                        polygonRasterizer.drawPolygon(greenPolygon.getPoints(), greenColor);
+                        System.out.println("red");
+
+                        Polygon redPolygon = clipper.clip(greenPolygon, yellowPolygon);
+
                         panel.clear();
-                        polygonRasterizer.drawPolygon(newPoints, 0x00ff0000);
-                        filler.fill(new Polygon(newPoints), 0x00f0f0f0, polygonRasterizer, 0x00ff0000, lineRasterizer);
+
+
+                        polygonRasterizer.drawPolygon(redPolygon.getPoints(), redColor);
+
+                        filler.fill(redPolygon, greyColor, polygonRasterizer, redColor, lineRasterizer);
+
                         polygonRasterizer.drawPolygon( clipperPoints, 0x00ffff00);
                         panel.repaint();
                     }
@@ -98,7 +113,6 @@ public class Controller2D implements Controller {
                         } else {
                             polygonRasterizer.drawPolygon(toClipPoints, 0x0000ff00);
                             panel.repaint();
-
                         }
                     }
 
@@ -135,6 +149,11 @@ public class Controller2D implements Controller {
                 }
                 // seed-fill
                 if (e.getButton() == MouseEvent.BUTTON2) {
+                    //seed-fill background -  does not work
+                    /*polygonRasterizer.drawPolygon( polygonPoints, 0x00ffffff);
+                    SeedFillBorder filler = new SeedFillBorder();
+                    filler.seedFill(raster, new Point2D(e.getX(), e.getY()), 0x0000ff00, 0x0000ff, new Polygon(polygonPoints));
+                    panel.repaint();*/
                     // seed-fill background
                     /*polygonRasterizer.drawPolygon( polygonPoints, 0x00ffffff);
                     SeedFill filler = new SeedFill();
@@ -153,7 +172,6 @@ public class Controller2D implements Controller {
             // draw polygon more interactively
             @Override
             public void mouseDragged(MouseEvent e) {
-                //for normal polygon
                 // when you want to draw the first line of the polygon by dragging the mouse
                 if (polygonPoints.isEmpty()) {
                     polygonPoints.add(new Point2D(e.getX(), e.getY()));
@@ -176,82 +194,8 @@ public class Controller2D implements Controller {
                 }
             }
         });
-        /*panel.addMouseListener(new MouseAdapter() {
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if (e.isControlDown()) return;
-
-                if (e.isShiftDown()) {
-                    //TODO
-                } else if (SwingUtilities.isLeftMouseButton(e)) {
-                    lineRasterizer.rasterize(new Line(x,y,e.getX(),e.getY(), 0xffffffff));
-                    x = e.getX();
-                    y = e.getY();
-                } else if (SwingUtilities.isMiddleMouseButton(e)) {
-                    //TODO
-                } else if (SwingUtilities.isRightMouseButton(e)) {
-                    //TODO
-                }
-            }
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.isControlDown()) {
-                    if (SwingUtilities.isLeftMouseButton(e)) {
-                        //TODO
-                    } else if (SwingUtilities.isRightMouseButton(e)) {
-                        //TODO
-                    }
-                }
-            }
-        });
-
-        panel.addMouseMotionListener(new MouseAdapter() {
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                if (e.isControlDown()) return;
-
-                if (e.isShiftDown()) {
-                    //TODO
-                } else if (SwingUtilities.isLeftMouseButton(e)) {
-                    //TODO
-                } else if (SwingUtilities.isRightMouseButton(e)) {
-                    //TODO
-                } else if (SwingUtilities.isMiddleMouseButton(e)) {
-                    //TODO
-                }
-                update();
-            }
-        });
-
-        panel.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                // na klávesu C vymazat plátno
-                if (e.getKeyCode() == KeyEvent.VK_C) {
-                    //TODO
-                }
-            }
-        });
-
-        panel.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                //panel.resize();
-                initObjects(panel.getRaster());
-            }
-        });*/
     }
 
-    private void update() {
-//        panel.clear();
-        //TODO
 
-    }
-
-    private void hardClear() {
-        panel.clear();
-    }
 
 }

@@ -53,4 +53,19 @@ public class Line {
     public int getColor() {
         return color;
     }
+
+    /**
+     * Calculates if the point is inside (like on the left side on the line) or outside (right side of the line)
+     * @param point point, which we want to check
+     * @return true or false
+     */
+    public boolean isInside(Point2D point) {
+
+        Point2D n = new Point2D( y2 - y1 ,- (x2 - x1));
+        Point2D v = new Point2D(point.getX() - x1, point.getY() - y1);
+
+        double dotProduct = (v.getX() * n.getX() + v.getY() * n.getY());
+
+        return dotProduct > 0;
+    }
 }

@@ -2,11 +2,7 @@ package rasterize;
 
 
 import model.Line;
-import model.Point2D;
-import rasterize.LineRasterizer;
-import rasterize.Raster;
 
-import java.awt.*;
 
 
 public class LineRasterizerGraphics implements LineRasterizer {

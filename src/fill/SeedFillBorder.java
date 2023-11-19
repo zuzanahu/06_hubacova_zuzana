@@ -38,7 +38,7 @@ public class SeedFillBorder {
         //the seed has on default the color of the raster background
         int c = seed.getX();
         int r = seed.getY();
-        if (!polygon.isPointInside(raster, c, r)) {
+        if (!polygon.isPointInside( c, r)) {
             return;
         }
         int oldColor = raster.getColor(c, r).orElseThrow(() -> new IllegalStateException("seed does not have any color in the raster"));

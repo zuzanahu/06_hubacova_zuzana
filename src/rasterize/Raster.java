@@ -47,6 +47,6 @@ public interface Raster {
      * To draw an image in a raster (the )
      * @param g type Graphics
      */
-    public void present(Graphics g);
+    void present(Graphics g);
 
 }

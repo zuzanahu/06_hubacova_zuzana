@@ -6,22 +6,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Polygon {
-    public Polygon(List<Point2D> points) {
-        this.points = points;
-    }
-
-    public List<Point2D> getPoints() {
+    public ArrayList<Point2D> getPoints() {
         return points;
     }
 
-    public void setPoints(List<Point2D> points) {
-        this.points = points;
+    ArrayList<Point2D> points;
+
+    public Polygon() {
+        this.points = new ArrayList<>();
     }
-
-    List<Point2D> points;
-
     public Polygon(ArrayList<Point2D> points) {
         this.points = points;
+
+        System.out.println("New polygon created:");
+        for (Point2D point : points) {
+            System.out.println(point);
+        }
     }
 
     public List<Line> getLines() {
@@ -31,10 +31,11 @@ public class Polygon {
         }
         lines.add(new Line(points.get(points.size()-1),points.get(0)));
         return lines;
+
     }
 
 
-    public boolean isPointInside(Raster raster, int c, int r) {
+    public boolean isPointInside( int c, int r) {
         int n = points.size();
         int intersections = 0;
 

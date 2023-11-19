@@ -4,10 +4,8 @@ import model.Point2D;
 import model.Polygon;
 import rasterize.Raster;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.function.Predicate;
 
 public class SeedFill {
 
@@ -17,7 +15,6 @@ public class SeedFill {
 
 
     private void dfs(Raster raster, int c, int r, int oldColor, int newColor) {
-        // check if the point is inside polygon TODO
 
         raster.getColor(c,r).ifPresent( color -> {
             if ((color != oldColor) || (c >= raster.getWidth()) || (r >= raster.getHeight()) || (c <= 0) || (r <= 0) ) {
@@ -40,7 +37,7 @@ public class SeedFill {
     public void seedFill(Raster raster, Point2D seed, int newColor, Polygon polygon) {
         int c = seed.getX();
         int r = seed.getY();
-        if (!polygon.isPointInside(raster, c, r)) {
+        if (!polygon.isPointInside(c, r)) {
             return;
         }
         int oldColor = raster.getColor(c, r).orElseThrow(() -> new IllegalStateException("seed does not have any color in the raster"));
@@ -56,14 +53,14 @@ public class SeedFill {
     public void seedFillBFS(Raster raster, Point2D seed, int newColor, Polygon polygon) {
         int c = seed.getX();
         int r = seed.getY();
-        if (!polygon.isPointInside(raster, c, r)) {
+        if (!polygon.isPointInside(c, r)) {
             return;
         }
         int oldColor = raster.getColor(c, r).orElseThrow(() -> new IllegalStateException("seed does not have any color in the raster"));
         if (oldColor == newColor) {
             return;
         }
-        Queue<Point2D> queue = new LinkedList<Point2D>();
+        Queue<Point2D> queue = new LinkedList<>();
         queue.add(seed);
         while (!queue.isEmpty()) {
             Point2D currentPoint = queue.poll();

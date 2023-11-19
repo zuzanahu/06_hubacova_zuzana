@@ -15,9 +15,9 @@ public class ScanLine {
     }
 
     /**
-     * How it works: for every y from yMin to yMax (<yMin, yMax> = height of the polygon) check if there are some points in the polygon lines that have that y (the points that are returned are the intercepts and in beween them <odd, even> we are going to color the entire horizontal line) as the lines add up the whole polygon is going to be filled with color)
-     * @param polygon
-     * @param fillColor
+     * How it works: for every y from yMin to yMax (<yMin, yMax> = height of the polygon) check if there are some points in the polygon lines that have that y (the points that are returned are the intercepts and in between them <odd, even> we are going to color the entire horizontal line) as the lines add up the whole polygon is going to be filled with color)
+     * @param polygon polygon
+     * @param fillColor fill color
      * @param polygoner can draw (rasterize) a polygon using polygonColor
      * @param liner lineRasterizer that can rasterize lines
      */
