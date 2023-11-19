@@ -84,7 +84,7 @@ public class ScanLine {
             // draw lines from even intercept to odd intercept
             for (int i = 0; i < sortedIntercepts.size(); i += 2) {
                 int xStart = (int) Math.round(sortedIntercepts.get(i));
-                int xEnd = (int) Math.round(sortedIntercepts.get(i + 1));
+                int xEnd = (int) Math.round(sortedIntercepts.get((i + 1) % sortedIntercepts.size()));
 
                 // Ensure xStart and xEnd are different to avoid processing vertices twice
                 if (xStart != xEnd) {

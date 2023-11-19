@@ -16,7 +16,7 @@ public class SeedFill {
     }
 
 
-    public void dfs(Raster raster, int c, int r, int oldColor, int newColor) {
+    private void dfs(Raster raster, int c, int r, int oldColor, int newColor) {
         // check if the point is inside polygon TODO
 
         raster.getColor(c,r).ifPresent( color -> {

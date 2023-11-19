@@ -2,17 +2,16 @@ package control;
 
 import fill.ScanLine;
 import fill.SeedFill;
-import fill.SeedFillBorder;
+import model.Clipper;
 import model.Line;
 import model.Point2D;
 import model.Polygon;
 import rasterize.*;
 import view.Panel;
 
-import javax.swing.*;
-import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Controller2D implements Controller {
 
@@ -23,7 +22,8 @@ public class Controller2D implements Controller {
 
     private PolygonRasterizer polygonRasterizer;
     private ArrayList<Point2D> polygonPoints;
-
+    private ArrayList<Point2D> clipperPoints;
+    private ArrayList<Point2D> toClipPoints;
     private Raster raster;
 
 
@@ -38,6 +38,8 @@ public class Controller2D implements Controller {
         this.polygonRasterizer = new PolygonRasterizer(lineRasterizer, raster);
         this.polygonPoints = new ArrayList<>();
         this.raster = raster;
+        this.clipperPoints = new ArrayList<>();
+        this.toClipPoints = new ArrayList<>();
      }
 
     @Override
@@ -45,21 +47,90 @@ public class Controller2D implements Controller {
         panel.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                // na klávesu C vymazat plátno
+                //on C clear canvas
                 if (e.getKeyCode() == KeyEvent.VK_C) {
                     polygonPoints.clear();
+                    toClipPoints.clear();
+                    clipperPoints.clear();
                     panel.clear();
+                }
+                //on L do scanline
+                if (e.getKeyCode() == KeyEvent.VK_L) {
+                    polygonRasterizer.drawPolygon( polygonPoints, 0x00ffffff);
+                    ScanLine scanner = new ScanLine();
+                    scanner.fill(new Polygon(polygonPoints), 0x000000ff, polygonRasterizer, 0x00ffffff, lineRasterizer);
+                    panel.repaint();
+                }
+                //on H clip
+                if (e.getKeyCode() == KeyEvent.VK_H) {
+                    if (clipperPoints.size() > 2 && toClipPoints.size() > 2) {
+                        panel.clear();
+                        Clipper clipper = new Clipper();
+                        ScanLine filler = new ScanLine();
+                        polygonRasterizer.drawPolygon( clipperPoints, 0x00ffff00);
+                        polygonRasterizer.drawPolygon(toClipPoints, 0x0000ff00);
+                        List<Point2D> newPoints = clipper.clip(new Polygon(toClipPoints), new Polygon(clipperPoints));
+                        panel.clear();
+                        polygonRasterizer.drawPolygon(newPoints, 0x00ff0000);
+                        filler.fill(new Polygon(newPoints), 0x00f0f0f0, polygonRasterizer, 0x00ff0000, lineRasterizer);
+                        polygonRasterizer.drawPolygon( clipperPoints, 0x00ffff00);
+                        panel.repaint();
+                    }
                 }
             }
         });
         panel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (e.getButton() == MouseEvent.BUTTON3) {
+                    // to clip points
+
+                    if (e.isControlDown()) {
+                        panel.clear();
+                        toClipPoints.add(new Point2D(e.getX(), e.getY()));
+
+                        if (toClipPoints.size() == 1) {
+                            raster.setColor(e.getX(), e.getY(), 0x0000ff00);
+                            panel.repaint();
+                        } else if (toClipPoints.size() == 2) {
+                            lineRasterizer.rasterize(new Line(toClipPoints.get(0), new Point2D(e.getX(), e.getY()), 0x0000ff00));
+                            panel.repaint();
+                        } else {
+                            polygonRasterizer.drawPolygon(toClipPoints, 0x0000ff00);
+                            panel.repaint();
+
+                        }
+                    }
+
+
+                    // clipper points
+                    if (e.isShiftDown()) {
+                        clipperPoints.add(new Point2D(e.getX(), e.getY()));
+                        if (clipperPoints.size() == 1) {
+                            polygonRasterizer.drawPolygon(toClipPoints, 0x0000ff00);
+                            raster.setColor(e.getX(), e.getY(), 0x00ffff00);
+                            panel.repaint();
+                        } else if (clipperPoints.size() == 2) {
+                            polygonRasterizer.drawPolygon(toClipPoints, 0x0000ff00);
+                            lineRasterizer.rasterize(new Line(clipperPoints.get(0), new Point2D(e.getX(), e.getY()), 0x00ffff00));
+                            panel.repaint();
+                        } else {
+                            raster.clear(0x000000);
+
+                            polygonRasterizer.drawPolygon(toClipPoints, 0x0000ff00);
+                            polygonRasterizer.drawPolygon(clipperPoints, 0x00ffff00);
+                            panel.repaint();
+                        }
+
+                    }
+                }
+            }
             @Override
             public void mouseReleased(MouseEvent e) {
                 // draw polygon
                 if (e.getButton() == MouseEvent.BUTTON1) {
                     polygonPoints.add(new Point2D(e.getX(), e.getY()));
                     polygonRasterizer.drawPolygon( polygonPoints, 0x00ffffff);
-                    lineRasterizer.drawLine(4, 100, 4, 100, 0x000000ff);
                     panel.repaint();
                 }
                 // seed-fill
@@ -75,19 +146,14 @@ public class Controller2D implements Controller {
                     filler.seedFillBFS(raster, new Point2D(e.getX(), e.getY()), 0x0000ff00, new Polygon(polygonPoints));
                     panel.repaint();
                 }
-                //scan-line
-                if (e.getButton() == MouseEvent.BUTTON3) {
-                    polygonRasterizer.drawPolygon( polygonPoints, 0x00ffffff);
-                    ScanLine scanner = new ScanLine();
-                    scanner.fill(new Polygon(polygonPoints), 0x000000ff, polygonRasterizer, 0x00ffffff, lineRasterizer);
-                    panel.repaint();
-                }
+
             }
         });
         panel.addMouseMotionListener(new MouseMotionAdapter() {
             // draw polygon more interactively
             @Override
             public void mouseDragged(MouseEvent e) {
+                //for normal polygon
                 // when you want to draw the first line of the polygon by dragging the mouse
                 if (polygonPoints.isEmpty()) {
                     polygonPoints.add(new Point2D(e.getX(), e.getY()));
